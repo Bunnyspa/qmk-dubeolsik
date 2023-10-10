@@ -2,7 +2,7 @@
 #include "dubeolsik.h"
 
 enum custom_keycodes {
-    TG_KOR = SAFE_RANGE
+    TG_KOR = SAFE_RANGE,
 };
 
 static bool korean_enabled = false;
@@ -21,8 +21,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                     process_korean_input(keycode);
                     return false;
                 }
+                reset_korean_input();
             }
-            reset_korean_input();
             break;
         default:
             if (record->event.pressed) {
