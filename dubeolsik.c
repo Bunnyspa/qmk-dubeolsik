@@ -216,43 +216,39 @@ uint32_t from_jamo(int initial, int medial, int final) {
     return initial * 588 + medial * 28 + final + SYLLABLE_BASE;
 }
 
-static uint32_t korean_recent = 0;
+static uint32_t syllable_recent = 0;
 
 void edit_syllable(uint32_t unicode) {
     tap_code(KC_BSPC);
     register_unicode(unicode);
-    korean_recent = unicode;
+    syllable_recent = unicode;
 }
 
-void reset_korean_input(void) {
-    korean_recent = 0;
-}
-
-void process_korean_input(uint16_t keycode) {
+bool process_record_dubeolsik(uint16_t keycode) {
     uint32_t unicode = to_korean_unicode(keycode);
 
-    //
     switch (unicode) {
         case 0:
-            tap_code(keycode);
-            reset_korean_input();
-            return;
+            // Ignore unmapped keycodes
+            syllable_recent = 0;
+            return false;
         case U_SCLN:
+            // Send semicolon
             tap_code(KC_SCLN);
-            reset_korean_input();
-            return;
+            syllable_recent = 0;
+            return true;
     }
 
-    // No recent korean
-    if (korean_recent == 0) {
+    // No recent syllable typed
+    if (syllable_recent == 0) {
         register_unicode(unicode);
-        korean_recent = unicode;
-        return;
+        syllable_recent = unicode;
+        return true;
     }
 
     bool is_jaum = ㄱ <= unicode && unicode <= ㅎ;
     int  initial, medial, final;
-    to_jamo(korean_recent, &initial, &medial, &final);
+    to_jamo(syllable_recent, &initial, &medial, &final);
 
     if (medial == 0) {
         if (is_jaum) {
@@ -294,7 +290,9 @@ void process_korean_input(uint16_t keycode) {
             register_unicode(first);
             uint32_t second = from_jamo(final, unicode - ㅏ, 0);
             register_unicode(second);
-            korean_recent = second;
+            syllable_recent = second;
         }
     }
+
+    return true;
 }

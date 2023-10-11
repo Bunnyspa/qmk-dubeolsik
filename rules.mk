@@ -1,3 +1,3 @@
-UNICODE_COMMON = yes
+UNICODE_ENABLE = yes
 
 SRC += dubeolsik.c
