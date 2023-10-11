@@ -55,7 +55,7 @@ const uint32_t ㅡ = 0x3161;
 const uint32_t ㅢ = 0x3162;
 const uint32_t ㅣ = 0x3163;
 
-const uint32_t U_SEMICOLON = 0x003b;
+const uint32_t U_SCLN = 0x003b;
 
 // Colemak-DH <-> Dubeolsik
 uint32_t to_korean_unicode(uint16_t keycode) {
@@ -88,11 +88,11 @@ uint32_t to_korean_unicode(uint16_t keycode) {
             return ㅑ;
         case KC_Y:
             return ㅐ;
-        case KC_SEMICOLON:
+        case KC_SCLN:
             return ㅔ;
         case S(KC_Y):
             return ㅒ;
-        case S(KC_SEMICOLON):
+        case S(KC_SCLN):
             return ㅖ;
         case KC_A:
             return ㅁ;
@@ -113,7 +113,7 @@ uint32_t to_korean_unicode(uint16_t keycode) {
         case KC_I:
             return ㅣ;
         case KC_O:
-            return U_SEMICOLON;
+            return U_SCLN;
         case KC_Z:
             return ㅋ;
         case KC_X:
@@ -237,8 +237,8 @@ void process_korean_input(uint16_t keycode) {
             tap_code(keycode);
             reset_korean_input();
             return;
-        case U_SEMICOLON:
-            tap_code(KC_SEMICOLON);
+        case U_SCLN:
+            tap_code(KC_SCLN);
             reset_korean_input();
             return;
     }
