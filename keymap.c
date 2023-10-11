@@ -8,19 +8,20 @@ enum custom_keycodes {
 static bool dubeolsik_enable = false;
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-	set_unicode_input_mode(UNICODE_MODE_WINCOMPOSE);
+    set_unicode_input_mode(UNICODE_MODE_WINCOMPOSE);
     switch (keycode) {
         case TG_DBS:
             if (record->event.pressed) {
                 dubeolsik_enable = !dubeolsik_enable;
             }
+            reset_dubeolsik();
             return false;
         default:
             if (record->event.pressed) {
-                if (dubeolsik_enable && process_record_dubeolsik(keycode))
-                {
+                if (dubeolsik_enable && process_record_dubeolsik(keycode)) {
                     return false;
                 }
+                reset_dubeolsik();
             }
             break;
     }
