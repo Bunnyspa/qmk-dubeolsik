@@ -316,7 +316,7 @@ void edit_unicode(uint32_t unicode) {
     unicode_recent = unicode;
 }
 
-void reset_dubeolsik() {
+void reset_dubeolsik(void) {
     unicode_recent = 0;
 }
 
@@ -326,12 +326,12 @@ bool process_record_dubeolsik(uint16_t keycode) {
     switch (unicode) {
         case 0:
             // Ignore unmapped keycodes
-            unicode_recent = 0;
+            reset_dubeolsik();
             return false;
         case U_SCLN:
             // Send semicolon
             tap_code(KC_SCLN);
-            unicode_recent = 0;
+            reset_dubeolsik();
             return true;
     }
 
