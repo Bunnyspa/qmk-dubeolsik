@@ -8,6 +8,7 @@ enum custom_keycodes {
 static bool dubeolsik_enable = false;
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+	set_unicode_input_mode(UNICODE_MODE_WINCOMPOSE);
     switch (keycode) {
         case TG_DBS:
             if (record->event.pressed) {
