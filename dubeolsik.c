@@ -125,10 +125,6 @@ uint32_t combine(uint32_t first, uint32_t second) {
     switch (first) {
         case ㄱ:
             switch (second) {
-#ifdef DBS_DOUBLE_TAP_TENSE
-                case ㄱ:
-                    return ㄲ;
-#endif /* DBS_DOUBLE_TAP_TENSE */
                 case ㅅ:
                     return ㄳ;
             }
@@ -161,34 +157,10 @@ uint32_t combine(uint32_t first, uint32_t second) {
             break;
         case ㅂ:
             switch (second) {
-#ifdef DBS_DOUBLE_TAP_TENSE
-                case ㅂ:
-                    return ㅃ;
-#endif /* DBS_DOUBLE_TAP_TENSE */
                 case ㅅ:
                     return ㅄ;
             }
             break;
-#ifdef DBS_DOUBLE_TAP_TENSE
-        case ㄷ:
-            switch (second) {
-                case ㄷ:
-                    return ㄸ;
-            }
-            break;
-        case ㅅ:
-            switch (second) {
-                case ㅅ:
-                    return ㅆ;
-            }
-            break;
-        case ㅈ:
-            switch (second) {
-                case ㅈ:
-                    return ㅉ;
-            }
-            break;
-#endif /* DBS_DOUBLE_TAP_TENSE */
         case ㅗ:
             switch (second) {
                 case ㅏ:
@@ -293,28 +265,6 @@ bool divide(uint32_t composed, uint32_t *first, uint32_t *second) {
             *first  = ㅡ;
             *second = ㅣ;
             return true;
-#ifdef DBS_DOUBLE_TAP_TENSE
-        case ㄲ:
-            *first  = ㄱ;
-            *second = ㄱ;
-            return true;
-        case ㄸ:
-            *first  = ㄷ;
-            *second = ㄷ;
-            return true;
-        case ㅃ:
-            *first  = ㅂ;
-            *second = ㅂ;
-            return true;
-        case ㅆ:
-            *first  = ㅅ;
-            *second = ㅅ;
-            return true;
-        case ㅉ:
-            *first  = ㅈ;
-            *second = ㅈ;
-            return true;
-#endif /* DBS_DOUBLE_TAP_TENSE */
         default:
             *first  = 0;
             *second = composed;
@@ -543,12 +493,9 @@ bool process_record_dubeolsik(uint16_t keycode) {
             if (combined == 0) {
                 // 각 + ㄱ = 각ㄱ
                 add_unicode(unicode);
-            } else if (final_able(combined)) {
+            } else {
                 // 각 + ㅅ = 갃
                 edit_unicode(from_jamo(initial, medial, combined));
-            } else {
-                // 갇 + ㄷ = 갇ㄷ (DBS_DOUBLE_TAP_TENSE)
-                add_unicode(unicode);
             }
         } else {
             // 갃 + ㅏ = 각사
