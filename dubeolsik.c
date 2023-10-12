@@ -55,31 +55,23 @@ const uint32_t ㅡ = 0x3161;
 const uint32_t ㅢ = 0x3162;
 const uint32_t ㅣ = 0x3163;
 
-const uint32_t U_SCLN = 0x003b;
+bool shifted(void) {
+    return keyboard_report->mods & MOD_BIT(KC_LSFT) || keyboard_report->mods & MOD_BIT(KC_RSFT);
+}
 
 // Colemak-DH <-> Dubeolsik
 uint32_t to_korean_unicode(uint16_t keycode) {
     switch (keycode) {
         case KC_Q:
-            return ㅂ;
+            return shifted() ? ㅃ : ㅂ;
         case KC_W:
-            return ㅈ;
+            return shifted() ? ㅉ : ㅈ;
         case KC_F:
-            return ㄷ;
+            return shifted() ? ㄸ : ㄷ;
         case KC_P:
-            return ㄱ;
+            return shifted() ? ㄲ : ㄱ;
         case KC_B:
-            return ㅅ;
-        case S(KC_Q):
-            return ㅃ;
-        case S(KC_W):
-            return ㅉ;
-        case S(KC_F):
-            return ㄸ;
-        case S(KC_P):
-            return ㄲ;
-        case S(KC_B):
-            return ㅆ;
+            return shifted() ? ㅆ : ㅅ;
         case KC_J:
             return ㅛ;
         case KC_L:
@@ -87,13 +79,9 @@ uint32_t to_korean_unicode(uint16_t keycode) {
         case KC_U:
             return ㅑ;
         case KC_Y:
-            return ㅐ;
+            return shifted() ? ㅒ : ㅐ;
         case KC_SCLN:
-            return ㅔ;
-        case S(KC_Y):
-            return ㅒ;
-        case S(KC_SCLN):
-            return ㅖ;
+            return shifted() ? ㅖ : ㅔ;
         case KC_A:
             return ㅁ;
         case KC_R:
@@ -113,7 +101,7 @@ uint32_t to_korean_unicode(uint16_t keycode) {
         case KC_I:
             return ㅣ;
         case KC_O:
-            return U_SCLN;
+            return KC_SCLN;
         case KC_Z:
             return ㅋ;
         case KC_X:
@@ -137,6 +125,10 @@ uint32_t combine(uint32_t first, uint32_t second) {
     switch (first) {
         case ㄱ:
             switch (second) {
+#ifdef DBS_DOUBLE_TAP_TENSE
+                case ㄱ:
+                    return ㄲ;
+#endif /* DBS_DOUBLE_TAP_TENSE */
                 case ㅅ:
                     return ㄳ;
             }
@@ -169,10 +161,34 @@ uint32_t combine(uint32_t first, uint32_t second) {
             break;
         case ㅂ:
             switch (second) {
+#ifdef DBS_DOUBLE_TAP_TENSE
+                case ㅂ:
+                    return ㅃ;
+#endif /* DBS_DOUBLE_TAP_TENSE */
                 case ㅅ:
                     return ㅄ;
             }
             break;
+#ifdef DBS_DOUBLE_TAP_TENSE
+        case ㄷ:
+            switch (second) {
+                case ㄷ:
+                    return ㄸ;
+            }
+            break;
+        case ㅅ:
+            switch (second) {
+                case ㅅ:
+                    return ㅆ;
+            }
+            break;
+        case ㅈ:
+            switch (second) {
+                case ㅈ:
+                    return ㅉ;
+            }
+            break;
+#endif /* DBS_DOUBLE_TAP_TENSE */
         case ㅗ:
             switch (second) {
                 case ㅏ:
@@ -203,7 +219,7 @@ uint32_t combine(uint32_t first, uint32_t second) {
     return 0;
 }
 
-bool decompose(uint32_t composed, uint32_t* first, uint32_t* second) {
+bool divide(uint32_t composed, uint32_t *first, uint32_t *second) {
     switch (composed) {
         case ㄳ:
             *first  = ㄱ;
@@ -249,12 +265,79 @@ bool decompose(uint32_t composed, uint32_t* first, uint32_t* second) {
             *first  = ㅂ;
             *second = ㅅ;
             return true;
+        case ㅘ:
+            *first  = ㅗ;
+            *second = ㅏ;
+            return true;
+        case ㅙ:
+            *first  = ㅗ;
+            *second = ㅐ;
+            return true;
+        case ㅚ:
+            *first  = ㅗ;
+            *second = ㅣ;
+            return true;
+        case ㅝ:
+            *first  = ㅜ;
+            *second = ㅓ;
+            return true;
+        case ㅞ:
+            *first  = ㅜ;
+            *second = ㅔ;
+            return true;
+        case ㅟ:
+            *first  = ㅜ;
+            *second = ㅣ;
+            return true;
+        case ㅢ:
+            *first  = ㅡ;
+            *second = ㅣ;
+            return true;
+#ifdef DBS_DOUBLE_TAP_TENSE
+        case ㄲ:
+            *first  = ㄱ;
+            *second = ㄱ;
+            return true;
+        case ㄸ:
+            *first  = ㄷ;
+            *second = ㄷ;
+            return true;
+        case ㅃ:
+            *first  = ㅂ;
+            *second = ㅂ;
+            return true;
+        case ㅆ:
+            *first  = ㅅ;
+            *second = ㅅ;
+            return true;
+        case ㅉ:
+            *first  = ㅈ;
+            *second = ㅈ;
+            return true;
+#endif /* DBS_DOUBLE_TAP_TENSE */
         default:
+            *first  = 0;
+            *second = composed;
             return false;
     }
 }
 
-void to_jamo(uint32_t unicode, uint32_t* initial, uint32_t* medial, uint32_t* final) {
+bool final_able(uint32_t consonant) {
+    switch (consonant) {
+        case ㄸ:
+        case ㅃ:
+        case ㅉ:
+            return false;
+        default:
+            return true;
+    }
+}
+
+bool to_jamo(uint32_t unicode, uint32_t *initial, uint32_t *medial, uint32_t *final) {
+    if (unicode < SYLLABLE_BASE) {
+        return false;
+    }
+
     uint32_t value = unicode - SYLLABLE_BASE;
 
     int final_index = value % 28;
@@ -262,69 +345,39 @@ void to_jamo(uint32_t unicode, uint32_t* initial, uint32_t* medial, uint32_t* fi
     int medial_index  = value % 21;
     int initial_index = value / 21;
 
-    int initial_offset = 0;
-    switch (initial_index) {
-        case 2:
-            initial_offset = 1;
-            break;
-        case 3 ... 5:
-            initial_offset = 3;
-            break;
-        case 6 ... 8:
-            initial_offset = 10;
-            break;
-        case 9 ... 18:
-            initial_offset = 11;
-            break;
-    }
+    int initial_offset = 9 <= initial_index   ? 11 // ㅅ ... ㅎ
+                         : 6 <= initial_index ? 10 // ㅁ ... ㅃ
+                         : 3 <= initial_index ? 3  // ㄷ ... ㄹ
+                         : 2 == initial_index ? 1  // ㄴ
+                                              : 0; // ㄱ
 
-    int final_offset = -1;
-    switch (final_index) {
-        case 8 ... 17:
-            final_offset = 0;
-            break;
-        case 18 ... 22:
-            final_offset = 1;
-            break;
-        case 23 ... 27:
-            final_offset = 2;
-            break;
-    }
+    int final_offset = 23 <= final_index   ? 2  // ㅊ ... ㅎ
+                       : 18 <= final_index ? 1  // ㅄ ... ㅈ
+                       : 8 <= final_index  ? 0  // ㄹ ... ㅂ
+                                           : -1; // ㄱ ... ㄷ
 
     *initial = ㄱ + initial_index + initial_offset;
     *medial  = ㅏ + medial_index;
     *final   = (final_index == 0) ? 0 : ㄱ + final_index + final_offset;
+
+    return true;
 }
 
 uint32_t from_jamo(uint32_t initial, uint32_t medial, uint32_t final) {
-    int initial_offset = 0;
-    switch (initial) {
-        case ㄴ:
-            initial_offset = 1;
-            break;
-        case ㄷ ... ㄹ:
-            initial_offset = 3;
-            break;
-        case ㅁ ... ㅃ:
-            initial_offset = 10;
-            break;
-        case ㅅ ... ㅎ:
-            initial_offset = 11;
-            break;
+    if (medial == 0) {
+        return initial;
     }
 
-    int final_offset = -1;
-    switch (final) {
-        case ㄹ ... ㅂ:
-            final_offset = 0;
-            break;
-        case ㅄ ... ㅈ:
-            final_offset = 1;
-            break;
-        case ㅊ ... ㅎ:
-            final_offset = 2;
-            break;
-    }
+    int initial_offset = ㅅ <= initial   ? 11 // ㅅ ... ㅎ
+                         : ㅁ <= initial ? 10 // ㅁ ... ㅃ
+                         : ㄷ <= initial ? 3  // ㄷ ... ㄹ
+                         : ㄴ == initial ? 1  // ㄴ
+                                         : 0; // ㄱ
+
+    int final_offset = ㅊ <= final   ? 2   // ㅊ ... ㅎ
+                       : ㅄ <= final ? 1   // ㅄ ... ㅈ
+                       : ㄹ <= final ? 0   // ㄹ ... ㅂ
+                                     : -1; // ㄱ ... ㄷ
 
     int initial_index = initial - ㄱ - initial_offset;
     int medial_index  = medial - ㅏ;
@@ -351,18 +404,69 @@ void reset_dubeolsik(void) {
 }
 
 bool process_record_dubeolsik(uint16_t keycode) {
+    // Fallthru shift (No reset)
+    if (keycode == KC_LSFT || keycode == KC_RSFT) {
+        return false;
+    }
+
+    uint32_t initial, medial, final;
+    bool     jamo = to_jamo(unicode_recent, &initial, &medial, &final);
+
+    // Backspace
+    if (keycode == KC_BSPC) {
+        if (unicode_recent == 0) {
+            // Fallthru if no recent
+            return false;
+        }
+
+        if (jamo) {
+            if (final != 0) {
+                // 각 + BSPC = 가
+                // 갃 + BSPC = 각
+                uint32_t f1, f2;
+                divide(final, &f1, &f2); // If not dividable, f1 = 0
+                edit_unicode(from_jamo(initial, medial, f1));
+            } else {
+                // 가 + BSPC = ㄱ
+                // 각 + BSPC = 가
+                uint32_t m1, m2;
+                divide(medial, &m1, &m2); // If not dividable, m1 = 0
+                edit_unicode(from_jamo(initial, m1, 0));
+            }
+        } else {
+            uint32_t d1, d2;
+            if (divide(unicode_recent, &d1, &d2)) {
+                // ㄳ + BSPC = ㄱ
+                // ㅘ + BSPC = ㅗ
+                edit_unicode(d1);
+            } else {
+                // ㄱ + BSPC = []
+                tap_code(KC_BSPC);
+                reset_dubeolsik();
+            }
+        }
+        return true;
+    }
+
     uint32_t unicode = to_korean_unicode(keycode);
 
+    // Fallthru unmapped keys
+    if (unicode == 0) {
+        reset_dubeolsik();
+        return false;
+    }
+
+    bool is_jaum = ㄱ <= unicode && unicode <= ㅎ;
+
+    // When KC_[A-Z] is not jamo in dubeolsik layout
+    // e.g. KC_O is semicolon in dubeolsik
     switch (unicode) {
-        case 0:
-            // Ignore unmapped keycodes
-            reset_dubeolsik();
-            return false;
-        case U_SCLN:
-            // Send semicolon
+        case KC_SCLN:
             tap_code(KC_SCLN);
             reset_dubeolsik();
             return true;
+        default:
+            break;
     }
 
     // No recent syllable typed
@@ -370,14 +474,6 @@ bool process_record_dubeolsik(uint16_t keycode) {
         add_unicode(unicode);
         return true;
     }
-
-    // Recent syllable is a single moum
-    if (ㅏ <= unicode_recent && unicode_recent <= ㅣ) {
-        add_unicode(unicode);
-        return true;
-    }
-
-    bool is_jaum = ㄱ <= unicode && unicode <= ㅎ;
 
     // Recent syllable is a single jaum
     if (ㄱ <= unicode_recent && unicode_recent <= ㅎ) {
@@ -391,11 +487,11 @@ bool process_record_dubeolsik(uint16_t keycode) {
                 edit_unicode(combined);
             }
         } else {
-            uint32_t initial1, initial2;
-            if (decompose(unicode_recent, &initial1, &initial2)) {
+            uint32_t i1, i2;
+            if (divide(unicode_recent, &i1, &i2)) {
                 // ㄳ + ㅏ = ㄱ사
-                edit_unicode(initial1);
-                add_unicode(from_jamo(initial2, unicode, 0));
+                edit_unicode(i1);
+                add_unicode(from_jamo(i2, unicode, 0));
             } else {
                 // ㄱ + ㅏ = 가
                 edit_unicode(from_jamo(unicode_recent, unicode, 0));
@@ -404,13 +500,33 @@ bool process_record_dubeolsik(uint16_t keycode) {
         return true;
     }
 
-    uint32_t initial, medial, final;
-    to_jamo(unicode_recent, &initial, &medial, &final);
+    // Recent syllable is a single moum
+    if (ㅏ <= unicode_recent && unicode_recent <= ㅣ) {
+        if (is_jaum) {
+            // ㅏ + ㄱ = ㅏㄱ
+            add_unicode(unicode);
+        } else {
+            uint32_t combined = combine(unicode_recent, unicode);
+            if (combined == 0) {
+                // ㅏ + ㅏ = ㅏㅏ
+                add_unicode(unicode);
+            } else {
+                // ㅗ + ㅏ = ㅘ
+                edit_unicode(combined);
+            }
+        }
+        return true;
+    }
 
     if (final == 0) {
         if (is_jaum) {
-            // 가 + ㄱ = 각
-            edit_unicode(from_jamo(initial, medial, unicode));
+            if (final_able(unicode)) {
+                // 가 + ㄱ = 각
+                edit_unicode(from_jamo(initial, medial, unicode));
+            } else {
+                // 가 + ㄸ = 가ㄸ
+                add_unicode(unicode);
+            }
         } else {
             uint32_t combined = combine(medial, unicode);
             if (combined == 0) {
@@ -426,23 +542,21 @@ bool process_record_dubeolsik(uint16_t keycode) {
             uint32_t combined = combine(final, unicode);
             if (combined == 0) {
                 // 각 + ㄱ = 각ㄱ
-                register_unicode(unicode);
-                unicode_recent = unicode;
-            } else {
+                add_unicode(unicode);
+            } else if (final_able(combined)) {
                 // 각 + ㅅ = 갃
                 edit_unicode(from_jamo(initial, medial, combined));
+            } else {
+                // 갇 + ㄷ = 갇ㄷ (DBS_DOUBLE_TAP_TENSE)
+                add_unicode(unicode);
             }
         } else {
-            uint32_t final1, final2;
-            if (decompose(final, &final1, &final2)) {
-                // 갃 + ㅏ = 각사
-                edit_unicode(from_jamo(initial, medial, final1));
-                add_unicode(from_jamo(final2, unicode, 0));
-            } else {
-                // 각 + ㅏ = 가가
-                edit_unicode(from_jamo(initial, medial, 0));
-                add_unicode(from_jamo(final, unicode, 0));
-            }
+            // 갃 + ㅏ = 각사
+            // 각 + ㅏ = 가가
+            uint32_t f1, f2;
+            divide(final, &f1, &f2); // If not dividable, f1 = 0, f2 = final
+            edit_unicode(from_jamo(initial, medial, f1));
+            add_unicode(from_jamo(f2, unicode, 0));
         }
     }
 
