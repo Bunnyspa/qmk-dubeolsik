@@ -400,12 +400,16 @@ bool process_record_dubeolsik(uint16_t keycode, keyrecord_t *record) {
                 edit_unicode(from_jamo(initial, medial, combined));
             }
         } else {
-            // 갃 + ㅏ = 각사
-            // 각 + ㅏ = 가가
             uint16_t f1, f2;
-            divide(final, &f1, &f2); // If not dividable, f1 = 0, f2 = final
-            edit_unicode(from_jamo(initial, medial, f1));
-            add_unicode(from_jamo(f2, unicode, 0));
+            if (divide(final, &f1, &f2)) {
+                // 갃 + ㅏ = 각사
+                edit_unicode(from_jamo(initial, medial, f1));
+                add_unicode(from_jamo(f2, unicode, 0));
+            } else {
+                // 각 + ㅏ = 가가
+                edit_unicode(from_jamo(initial, medial, 0));
+                add_unicode(from_jamo(final, unicode, 0));
+            }
         }
     }
 
