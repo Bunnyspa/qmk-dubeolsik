@@ -1,124 +1,26 @@
 #include QMK_KEYBOARD_H
+#include "dubeolsik.h"
+#include "keymap.h"
 
-#define 가 0xac00
+uint16_t dubeolsik_unicode(keyrecord_t *record) {
+    uint8_t  row     = record->event.key.row;
+    uint8_t  col     = record->event.key.col;
+    uint16_t unicode = dubeolsik_map[row][col];
 
-#define ㄱ 0x3131
-#define ㄲ 0x3132
-#define ㄳ 0x3133
-#define ㄴ 0x3134
-#define ㄵ 0x3135
-#define ㄶ 0x3136
-#define ㄷ 0x3137
-#define ㄸ 0x3138
-#define ㄹ 0x3139
-#define ㄺ 0x313a
-#define ㄻ 0x313b
-#define ㄼ 0x313c
-#define ㄽ 0x313d
-#define ㄾ 0x313e
-#define ㄿ 0x313f
-#define ㅀ 0x3140
-#define ㅁ 0x3141
-#define ㅂ 0x3142
-#define ㅃ 0x3143
-#define ㅄ 0x3144
-#define ㅅ 0x3145
-#define ㅆ 0x3146
-#define ㅇ 0x3147
-#define ㅈ 0x3148
-#define ㅉ 0x3149
-#define ㅊ 0x314a
-#define ㅋ 0x314b
-#define ㅌ 0x314c
-#define ㅍ 0x314d
-#define ㅎ 0x314e
-
-#define ㅏ 0x314f
-#define ㅐ 0x3150
-#define ㅑ 0x3151
-#define ㅒ 0x3152
-#define ㅓ 0x3153
-#define ㅔ 0x3154
-#define ㅕ 0x3155
-#define ㅖ 0x3156
-#define ㅗ 0x3157
-#define ㅘ 0x3158
-#define ㅙ 0x3159
-#define ㅚ 0x315a
-#define ㅛ 0x315b
-#define ㅜ 0x315c
-#define ㅝ 0x315d
-#define ㅞ 0x315e
-#define ㅟ 0x315f
-#define ㅠ 0x3160
-#define ㅡ 0x3161
-#define ㅢ 0x3162
-#define ㅣ 0x3163
-
-bool shifted(void) {
-    return keyboard_report->mods & MOD_BIT(KC_LSFT) || keyboard_report->mods & MOD_BIT(KC_RSFT);
-}
-
-// Colemak-DH <-> Dubeolsik
-uint16_t to_korean_unicode(uint16_t keycode) {
-    switch (keycode) {
-        case KC_Q:
-            return shifted() ? ㅃ : ㅂ;
-        case KC_W:
-            return shifted() ? ㅉ : ㅈ;
-        case KC_F:
-            return shifted() ? ㄸ : ㄷ;
-        case KC_P:
-            return shifted() ? ㄲ : ㄱ;
-        case KC_B:
-            return shifted() ? ㅆ : ㅅ;
-        case KC_J:
-            return ㅛ;
-        case KC_L:
-            return ㅕ;
-        case KC_U:
-            return ㅑ;
-        case KC_Y:
-            return shifted() ? ㅒ : ㅐ;
-        case KC_SCLN:
-            return shifted() ? ㅖ : ㅔ;
-        case KC_A:
-            return ㅁ;
-        case KC_R:
-            return ㄴ;
-        case KC_S:
-            return ㅇ;
-        case KC_T:
-            return ㄹ;
-        case KC_G:
-            return ㅎ;
-        case KC_M:
-            return ㅗ;
-        case KC_N:
-            return ㅓ;
-        case KC_E:
-            return ㅏ;
-        case KC_I:
-            return ㅣ;
-        case KC_O:
-            return KC_SCLN;
-        case KC_Z:
-            return ㅋ;
-        case KC_X:
-            return ㅌ;
-        case KC_C:
-            return ㅊ;
-        case KC_D:
-            return ㅍ;
-        case KC_V:
-            return ㅠ;
-        case KC_K:
-            return ㅜ;
-        case KC_H:
-            return ㅡ;
-        default:
-            return 0;
+    if (keyboard_report->mods & MOD_BIT(KC_LSFT) || keyboard_report->mods & MOD_BIT(KC_RSFT)) {
+        switch (unicode) {
+            case ㅂ:
+            case ㅈ:
+            case ㄷ:
+            case ㄱ:
+            case ㅅ:
+                return unicode + 1;
+            case ㅐ:
+            case ㅔ:
+                return unicode + 2;
+        }
     }
+    return unicode;
 }
 
 uint16_t combine(uint16_t first, uint16_t second) {
@@ -194,79 +96,79 @@ uint16_t combine(uint16_t first, uint16_t second) {
 bool divide(uint16_t composed, uint16_t *first, uint16_t *second) {
     switch (composed) {
         case ㄳ:
-            *first = ㄱ;
+            *first  = ㄱ;
             *second = ㅅ;
             return true;
         case ㄵ:
-            *first = ㄴ;
+            *first  = ㄴ;
             *second = ㅈ;
             return true;
         case ㄶ:
-            *first = ㄴ;
+            *first  = ㄴ;
             *second = ㅎ;
             return true;
         case ㄺ:
-            *first = ㄹ;
+            *first  = ㄹ;
             *second = ㄱ;
             return true;
         case ㄻ:
-            *first = ㄹ;
+            *first  = ㄹ;
             *second = ㅁ;
             return true;
         case ㄼ:
-            *first = ㄹ;
+            *first  = ㄹ;
             *second = ㅂ;
             return true;
         case ㄽ:
-            *first = ㄹ;
+            *first  = ㄹ;
             *second = ㅅ;
             return true;
         case ㄾ:
-            *first = ㄹ;
+            *first  = ㄹ;
             *second = ㅌ;
             return true;
         case ㄿ:
-            *first = ㄹ;
+            *first  = ㄹ;
             *second = ㅍ;
             return true;
         case ㅀ:
-            *first = ㄹ;
+            *first  = ㄹ;
             *second = ㅎ;
             return true;
         case ㅄ:
-            *first = ㅂ;
+            *first  = ㅂ;
             *second = ㅅ;
             return true;
         case ㅘ:
-            *first = ㅗ;
+            *first  = ㅗ;
             *second = ㅏ;
             return true;
         case ㅙ:
-            *first = ㅗ;
+            *first  = ㅗ;
             *second = ㅐ;
             return true;
         case ㅚ:
-            *first = ㅗ;
+            *first  = ㅗ;
             *second = ㅣ;
             return true;
         case ㅝ:
-            *first = ㅜ;
+            *first  = ㅜ;
             *second = ㅓ;
             return true;
         case ㅞ:
-            *first = ㅜ;
+            *first  = ㅜ;
             *second = ㅔ;
             return true;
         case ㅟ:
-            *first = ㅜ;
+            *first  = ㅜ;
             *second = ㅣ;
             return true;
         case ㅢ:
-            *first = ㅡ;
+            *first  = ㅡ;
             *second = ㅣ;
             return true;
         default:
-            *first = 0;
+            *first  = 0;
             *second = composed;
             return false;
     }
@@ -292,7 +194,7 @@ bool to_jamo(uint16_t unicode, uint16_t *initial, uint16_t *medial, uint16_t *fi
 
     int final_index = value % 28;
     value /= 28;
-    int medial_index = value % 21;
+    int medial_index  = value % 21;
     int initial_index = value / 21;
 
     int initial_offset = 9 <= initial_index   ? 11 // ㅅ ... ㅎ
@@ -307,8 +209,8 @@ bool to_jamo(uint16_t unicode, uint16_t *initial, uint16_t *medial, uint16_t *fi
                                            : -1; // ㄱ ... ㄷ
 
     *initial = ㄱ + initial_index + initial_offset;
-    *medial = ㅏ + medial_index;
-    *final = (final_index == 0) ? 0 : ㄱ + final_index + final_offset;
+    *medial  = ㅏ + medial_index;
+    *final   = (final_index == 0) ? 0 : ㄱ + final_index + final_offset;
 
     return true;
 }
@@ -330,8 +232,8 @@ uint16_t from_jamo(uint16_t initial, uint16_t medial, uint16_t final) {
                                      : -1; // ㄱ ... ㄷ
 
     int initial_index = initial - ㄱ - initial_offset;
-    int medial_index = medial - ㅏ;
-    int final_index = (final == 0) ? 0 : final - ㄱ - final_offset;
+    int medial_index  = medial - ㅏ;
+    int final_index   = (final == 0) ? 0 : final - ㄱ - final_offset;
 
     return initial_index * 588 + medial_index * 28 + final_index + 가;
 }
@@ -353,14 +255,14 @@ void reset_dubeolsik(void) {
     unicode_recent = 0;
 }
 
-bool process_record_dubeolsik(uint16_t keycode) {
+bool process_record_dubeolsik(uint16_t keycode, keyrecord_t *record) {
     // Fallthru shift (No reset)
     if (keycode == KC_LSFT || keycode == KC_RSFT) {
         return false;
     }
 
     uint16_t initial, medial, final;
-    bool jamo = to_jamo(unicode_recent, &initial, &medial, &final);
+    bool     jamo = to_jamo(unicode_recent, &initial, &medial, &final);
 
     // Backspace
     if (keycode == KC_BSPC) {
@@ -398,7 +300,7 @@ bool process_record_dubeolsik(uint16_t keycode) {
         return true;
     }
 
-    uint16_t unicode = to_korean_unicode(keycode);
+    uint16_t unicode = dubeolsik_unicode(record);
 
     // Fallthru unmapped keys
     if (unicode == 0) {

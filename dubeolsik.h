@@ -1,2 +1,57 @@
-bool process_record_dubeolsik(uint16_t keycode);
+bool process_record_dubeolsik(uint16_t keycode, keyrecord_t *record);
 void reset_dubeolsik(void);
+
+#define 가 0xac00
+
+#define ㄱ 0x3131
+#define ㄲ 0x3132
+#define ㄳ 0x3133
+#define ㄴ 0x3134
+#define ㄵ 0x3135
+#define ㄶ 0x3136
+#define ㄷ 0x3137
+#define ㄸ 0x3138
+#define ㄹ 0x3139
+#define ㄺ 0x313a
+#define ㄻ 0x313b
+#define ㄼ 0x313c
+#define ㄽ 0x313d
+#define ㄾ 0x313e
+#define ㄿ 0x313f
+#define ㅀ 0x3140
+#define ㅁ 0x3141
+#define ㅂ 0x3142
+#define ㅃ 0x3143
+#define ㅄ 0x3144
+#define ㅅ 0x3145
+#define ㅆ 0x3146
+#define ㅇ 0x3147
+#define ㅈ 0x3148
+#define ㅉ 0x3149
+#define ㅊ 0x314a
+#define ㅋ 0x314b
+#define ㅌ 0x314c
+#define ㅍ 0x314d
+#define ㅎ 0x314e
+
+#define ㅏ 0x314f
+#define ㅐ 0x3150
+#define ㅑ 0x3151
+#define ㅒ 0x3152
+#define ㅓ 0x3153
+#define ㅔ 0x3154
+#define ㅕ 0x3155
+#define ㅖ 0x3156
+#define ㅗ 0x3157
+#define ㅘ 0x3158
+#define ㅙ 0x3159
+#define ㅚ 0x315a
+#define ㅛ 0x315b
+#define ㅜ 0x315c
+#define ㅝ 0x315d
+#define ㅞ 0x315e
+#define ㅟ 0x315f
+#define ㅠ 0x3160
+#define ㅡ 0x3161
+#define ㅢ 0x3162
+#define ㅣ 0x3163
