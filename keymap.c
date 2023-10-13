@@ -1,7 +1,7 @@
 #include QMK_KEYBOARD_H
 #include "dubeolsik.h"
 
-enum layers{
+enum layers {
     _QWERTY = 0,
     _FN,
 }
