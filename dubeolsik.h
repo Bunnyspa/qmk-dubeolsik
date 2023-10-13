@@ -1,5 +1,5 @@
-bool process_record_dubeolsik(uint16_t keycode, keyrecord_t *record);
-void reset_dubeolsik(void);
+bool process_record_dbs(uint16_t keycode, keyrecord_t *record);
+void reset_dbs(void);
 
 #define ㄱ 0x3131
 #define ㄲ 0x3132
