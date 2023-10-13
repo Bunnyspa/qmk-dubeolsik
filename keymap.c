@@ -42,10 +42,10 @@ static uint16_t dubeolsik_timer;
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case TG_DBS:
+            reset_dbs_input();
             if (record->event.pressed) {
                 dubeolsik_enable = !dubeolsik_enable;
             }
-            reset_dubeolsik();
             return false;
         case KC_A ... KC_Z:
         case KC_SCLN:
@@ -54,14 +54,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case KC_RSFT:
             if (record->event.pressed) {
                 uint8_t current_layer = get_highest_layer(layer_state);
-                if (dubeolsik_enable && current_layer == 0 && process_record_dubeolsik(keycode, record)) {
+                if (dubeolsik_enable && current_layer == 0 && process_record_dbs(keycode, record)) {
                     dubeolsik_timer = (record->event.time + DBS_TIMEOUT_MS) | 1;
                     return false;
                 }
             }
             break;
         default:
-            reset_dubeolsik();
+            reset_dbs_input();
             break;
     }
     return true;
@@ -69,7 +69,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 void matrix_scan_user(void) {
     if (dubeolsik_timer && timer_expired(timer_read(), dubeolsik_timer)) {
-        reset_dubeolsik();
+        reset_dbs_input();
         dubeolsik_timer = 0;
     }
 }

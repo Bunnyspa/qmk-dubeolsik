@@ -167,6 +167,13 @@ uint16_t from_jamo(uint16_t initial, uint16_t medial, uint16_t final) {
 
 static uint16_t unicode_recent = 0;
 
+/**
+ * Process Input
+ */
+void reset_dbs_input(void) {
+    unicode_recent = 0;
+}
+
 void add_unicode(uint16_t unicode) {
     register_unicode(unicode);
     unicode_recent = unicode;
@@ -178,11 +185,7 @@ void edit_unicode(uint16_t unicode) {
     unicode_recent = unicode;
 }
 
-void reset_dubeolsik(void) {
-    unicode_recent = 0;
-}
-
-bool process_record_dubeolsik(uint16_t keycode, keyrecord_t *record) {
+bool process_record_dbs(uint16_t keycode, keyrecord_t *record) {
     // Fallthru shift (No reset)
     if (keycode == KC_LSFT || keycode == KC_RSFT) {
         return false;
@@ -194,7 +197,7 @@ bool process_record_dubeolsik(uint16_t keycode, keyrecord_t *record) {
     // Backspace
     if (keycode == KC_BSPC) {
         if (unicode_recent == 0) {
-            // Fallthru if no recent
+            // Fallthru if no recent korean is typed
             return false;
         }
 
@@ -226,8 +229,8 @@ bool process_record_dubeolsik(uint16_t keycode, keyrecord_t *record) {
                 edit_unicode(d1);
             } else {
                 // ㄱ + BSPC = []
+                reset_dbs_input();
                 tap_code(KC_BSPC);
-                reset_dubeolsik();
             }
         }
         return true;
@@ -235,10 +238,17 @@ bool process_record_dubeolsik(uint16_t keycode, keyrecord_t *record) {
 
     uint16_t unicode = dubeolsik_unicode(record);
 
-    // Fallthru non-korean unicodes (e.g. KC_NO, KC_SCLN)
-    if (unicode < ㄱ || ㅣ < unicode) {
-        reset_dubeolsik();
+    // Fallthru unmapped unicodes
+    if (unicode == 0) {
+        reset_dbs_input();
         return false;
+    }
+
+    // Tap non-korean unicodes (e.g. KC_SCLN)
+    if (unicode < ㄱ || ㅣ < unicode) {
+        reset_dbs_input();
+        tap_code(unicode);
+        return true;
     }
 
     bool is_jaum = ㄱ <= unicode && unicode <= ㅎ;
