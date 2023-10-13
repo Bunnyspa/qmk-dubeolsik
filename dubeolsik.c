@@ -114,9 +114,9 @@ bool final_able(uint16_t consonant) {
     }
 }
 
-bool to_jamo(uint16_t unicode, uint16_t *initial, uint16_t *medial, uint16_t *final) {
+void to_jamo(uint16_t unicode, uint16_t *initial, uint16_t *medial, uint16_t *final) {
     if (unicode < 가) {
-        return false;
+        return;
     }
 
     uint16_t value = unicode - 가;
@@ -140,8 +140,6 @@ bool to_jamo(uint16_t unicode, uint16_t *initial, uint16_t *medial, uint16_t *fi
     *initial = ㄱ + initial_index + initial_offset;
     *medial  = ㅏ + medial_index;
     *final   = (final_index == 0) ? 0 : ㄱ + final_index + final_offset;
-
-    return true;
 }
 
 uint16_t from_jamo(uint16_t initial, uint16_t medial, uint16_t final) {
@@ -191,7 +189,7 @@ bool process_record_dubeolsik(uint16_t keycode, keyrecord_t *record) {
     }
 
     uint16_t initial, medial, final;
-    bool     jamo = to_jamo(unicode_recent, &initial, &medial, &final);
+    to_jamo(unicode_recent, &initial, &medial, &final);
 
     // Backspace
     if (keycode == KC_BSPC) {
@@ -200,19 +198,25 @@ bool process_record_dubeolsik(uint16_t keycode, keyrecord_t *record) {
             return false;
         }
 
-        if (jamo) {
+        if (unicode_recent < 가) {
             if (final != 0) {
-                // 각 + BSPC = 가
-                // 갃 + BSPC = 각
                 uint16_t f1, f2;
-                divide(final, &f1, &f2); // If not dividable, f1 = 0
-                edit_unicode(from_jamo(initial, medial, f1));
+                if (divide(final, &f1, &f2)) {
+                    // 갃 + BSPC = 각
+                    edit_unicode(from_jamo(initial, medial, f1));
+                } else {
+                    // 각 + BSPC = 가
+                    edit_unicode(from_jamo(initial, medial, 0));
+                }
             } else {
-                // 가 + BSPC = ㄱ
-                // 각 + BSPC = 가
                 uint16_t m1, m2;
-                divide(medial, &m1, &m2); // If not dividable, m1 = 0
-                edit_unicode(from_jamo(initial, m1, 0));
+                if (divide(medial, &m1, &m2)) {
+                    // 각 + BSPC = 가
+                    edit_unicode(from_jamo(initial, m1, 0));
+                } else {
+                    // 가 + BSPC = ㄱ
+                    edit_unicode(from_jamo(initial, 0, 0));
+                }
             }
         } else {
             uint16_t d1, d2;
@@ -231,24 +235,13 @@ bool process_record_dubeolsik(uint16_t keycode, keyrecord_t *record) {
 
     uint16_t unicode = dubeolsik_unicode(record);
 
-    // Fallthru unmapped keys
-    if (unicode == 0) {
+    // Fallthru non-korean unicodes (e.g. KC_NO, KC_SCLN)
+    if (unicode < ㄱ || ㅣ < unicode) {
         reset_dubeolsik();
         return false;
     }
 
     bool is_jaum = ㄱ <= unicode && unicode <= ㅎ;
-
-    // When KC_[A-Z] is not jamo in dubeolsik layout
-    // e.g. KC_O is semicolon in dubeolsik
-    switch (unicode) {
-        case KC_SCLN:
-            tap_code(KC_SCLN);
-            reset_dubeolsik();
-            return true;
-        default:
-            break;
-    }
 
     // No recent syllable typed
     if (unicode_recent == 0) {
