@@ -1,8 +1,6 @@
 bool process_record_dubeolsik(uint16_t keycode, keyrecord_t *record);
 void reset_dubeolsik(void);
 
-#define 가 0xac00
-
 #define ㄱ 0x3131
 #define ㄲ 0x3132
 #define ㄳ 0x3133
@@ -55,3 +53,5 @@ void reset_dubeolsik(void);
 #define ㅡ 0x3161
 #define ㅢ 0x3162
 #define ㅣ 0x3163
+
+#define 가 0xac00

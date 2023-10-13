@@ -5,9 +5,8 @@ enum custom_keycodes {
     TG_DBS = SAFE_RANGE,
 };
 
-// clang-format off
-
 // Example keymap from kbdcraft/adam64
+// clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [0] = LAYOUT_64_ansi(
         QK_GESC, KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSLS,
@@ -34,7 +33,6 @@ const uint16_t PROGMEM dubeolsik_map[MATRIX_ROWS][MATRIX_COLS] =
         XXXXXXX, ㅋ,      ㅌ,      ㅊ,      ㅍ,      ㅠ,      ㅜ,      ㅡ,      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
         XXXXXXX, XXXXXXX, XXXXXXX,                   XXXXXXX,                            XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX
     );
-
 // clang-format on
 
 static bool     dubeolsik_enable = false;

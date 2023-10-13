@@ -7,6 +7,7 @@ uint16_t dubeolsik_unicode(keyrecord_t *record) {
     uint8_t  col     = record->event.key.col;
     uint16_t unicode = dubeolsik_map[row][col];
 
+    // Shifted keys (e.g. KC_LSFT + ㅂ = ㅃ)
     if (keyboard_report->mods & MOD_BIT(KC_LSFT) || keyboard_report->mods & MOD_BIT(KC_RSFT)) {
         switch (unicode) {
             case ㅂ:
@@ -20,159 +21,87 @@ uint16_t dubeolsik_unicode(keyrecord_t *record) {
                 return unicode + 2;
         }
     }
+
     return unicode;
 }
 
+// clang-format off
 uint16_t combine(uint16_t first, uint16_t second) {
     switch (first) {
         case ㄱ:
             switch (second) {
-                case ㅅ:
-                    return ㄳ;
+                case ㅅ: return ㄳ;
             }
             break;
         case ㄴ:
             switch (second) {
-                case ㅈ:
-                    return ㄵ;
-                case ㅎ:
-                    return ㄶ;
+                case ㅈ: return ㄵ;
+                case ㅎ: return ㄶ;
             }
             break;
         case ㄹ:
             switch (second) {
-                case ㄱ:
-                    return ㄺ;
-                case ㅁ:
-                    return ㄻ;
-                case ㅂ:
-                    return ㄼ;
-                case ㅅ:
-                    return ㄽ;
-                case ㅌ:
-                    return ㄾ;
-                case ㅍ:
-                    return ㄿ;
-                case ㅎ:
-                    return ㅀ;
+                case ㄱ: return ㄺ;
+                case ㅁ: return ㄻ;
+                case ㅂ: return ㄼ;
+                case ㅅ: return ㄽ;
+                case ㅌ: return ㄾ;
+                case ㅍ: return ㄿ;
+                case ㅎ: return ㅀ;
             }
             break;
         case ㅂ:
             switch (second) {
-                case ㅅ:
-                    return ㅄ;
+                case ㅅ: return ㅄ;
             }
             break;
         case ㅗ:
             switch (second) {
-                case ㅏ:
-                    return ㅘ;
-                case ㅐ:
-                    return ㅙ;
-                case ㅣ:
-                    return ㅚ;
+                case ㅏ: return ㅘ;
+                case ㅐ: return ㅙ;
+                case ㅣ: return ㅚ;
             }
             break;
         case ㅜ:
             switch (second) {
-                case ㅓ:
-                    return ㅝ;
-                case ㅔ:
-                    return ㅞ;
-                case ㅣ:
-                    return ㅟ;
+                case ㅓ: return ㅝ;
+                case ㅔ: return ㅞ;
+                case ㅣ: return ㅟ;
             }
             break;
         case ㅡ:
             switch (second) {
-                case ㅣ:
-                    return ㅢ;
+                case ㅣ: return ㅢ;
             }
             break;
     }
     return 0;
 }
 
-bool divide(uint16_t composed, uint16_t *first, uint16_t *second) {
-    switch (composed) {
-        case ㄳ:
-            *first  = ㄱ;
-            *second = ㅅ;
-            return true;
-        case ㄵ:
-            *first  = ㄴ;
-            *second = ㅈ;
-            return true;
-        case ㄶ:
-            *first  = ㄴ;
-            *second = ㅎ;
-            return true;
-        case ㄺ:
-            *first  = ㄹ;
-            *second = ㄱ;
-            return true;
-        case ㄻ:
-            *first  = ㄹ;
-            *second = ㅁ;
-            return true;
-        case ㄼ:
-            *first  = ㄹ;
-            *second = ㅂ;
-            return true;
-        case ㄽ:
-            *first  = ㄹ;
-            *second = ㅅ;
-            return true;
-        case ㄾ:
-            *first  = ㄹ;
-            *second = ㅌ;
-            return true;
-        case ㄿ:
-            *first  = ㄹ;
-            *second = ㅍ;
-            return true;
-        case ㅀ:
-            *first  = ㄹ;
-            *second = ㅎ;
-            return true;
-        case ㅄ:
-            *first  = ㅂ;
-            *second = ㅅ;
-            return true;
-        case ㅘ:
-            *first  = ㅗ;
-            *second = ㅏ;
-            return true;
-        case ㅙ:
-            *first  = ㅗ;
-            *second = ㅐ;
-            return true;
-        case ㅚ:
-            *first  = ㅗ;
-            *second = ㅣ;
-            return true;
-        case ㅝ:
-            *first  = ㅜ;
-            *second = ㅓ;
-            return true;
-        case ㅞ:
-            *first  = ㅜ;
-            *second = ㅔ;
-            return true;
-        case ㅟ:
-            *first  = ㅜ;
-            *second = ㅣ;
-            return true;
-        case ㅢ:
-            *first  = ㅡ;
-            *second = ㅣ;
-            return true;
-        default:
-            *first  = 0;
-            *second = composed;
-            return false;
+bool divide(uint16_t compound, uint16_t *first, uint16_t *second) {
+    switch (compound) {
+        case ㄳ: *first  = ㄱ; *second = ㅅ; return true;
+        case ㄵ: *first  = ㄴ; *second = ㅈ; return true;
+        case ㄶ: *first  = ㄴ; *second = ㅎ; return true;
+        case ㄺ: *first  = ㄹ; *second = ㄱ; return true;
+        case ㄻ: *first  = ㄹ; *second = ㅁ; return true;
+        case ㄼ: *first  = ㄹ; *second = ㅂ; return true;
+        case ㄽ: *first  = ㄹ; *second = ㅅ; return true;
+        case ㄾ: *first  = ㄹ; *second = ㅌ; return true;
+        case ㄿ: *first  = ㄹ; *second = ㅍ; return true;
+        case ㅀ: *first  = ㄹ; *second = ㅎ; return true;
+        case ㅄ: *first  = ㅂ; *second = ㅅ; return true;
+        case ㅘ: *first  = ㅗ; *second = ㅏ; return true;
+        case ㅙ: *first  = ㅗ; *second = ㅐ; return true;
+        case ㅚ: *first  = ㅗ; *second = ㅣ; return true;
+        case ㅝ: *first  = ㅜ; *second = ㅓ; return true;
+        case ㅞ: *first  = ㅜ; *second = ㅔ; return true;
+        case ㅟ: *first  = ㅜ; *second = ㅣ; return true;
+        case ㅢ: *first  = ㅡ; *second = ㅣ; return true;
+        default: return false;
     }
 }
+// clang-format on
 
 bool final_able(uint16_t consonant) {
     switch (consonant) {
