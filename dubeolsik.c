@@ -103,7 +103,7 @@ bool divide(uint16_t compound, uint16_t *first, uint16_t *second) {
 }
 // clang-format on
 
-bool final_able(uint16_t consonant) {
+bool is_valid_final(uint16_t consonant) {
     switch (consonant) {
         case ㄸ:
         case ㅃ:
@@ -112,6 +112,29 @@ bool final_able(uint16_t consonant) {
         default:
             return true;
     }
+}
+
+uint16_t from_jamo(uint16_t initial, uint16_t medial, uint16_t final) {
+    if (medial == 0) {
+        return initial;
+    }
+
+    int initial_offset = ㅅ <= initial   ? 11 // ㅅ ... ㅎ
+                         : ㅁ <= initial ? 10 // ㅁ ... ㅃ
+                         : ㄷ <= initial ? 3  // ㄷ ... ㄹ
+                         : ㄴ == initial ? 1  // ㄴ
+                                         : 0; // ㄱ
+
+    int final_offset = ㅊ <= final   ? 2   // ㅊ ... ㅎ
+                       : ㅄ <= final ? 1   // ㅄ ... ㅈ
+                       : ㄹ <= final ? 0   // ㄹ ... ㅂ
+                                     : -1; // ㄱ ... ㄷ
+
+    int initial_index = initial - ㄱ - initial_offset;
+    int medial_index  = medial - ㅏ;
+    int final_index   = (final == 0) ? 0 : final - ㄱ - final_offset;
+
+    return initial_index * 588 + medial_index * 28 + final_index + 가;
 }
 
 void to_jamo(uint16_t unicode, uint16_t *initial, uint16_t *medial, uint16_t *final) {
@@ -140,29 +163,6 @@ void to_jamo(uint16_t unicode, uint16_t *initial, uint16_t *medial, uint16_t *fi
     *initial = ㄱ + initial_index + initial_offset;
     *medial  = ㅏ + medial_index;
     *final   = (final_index == 0) ? 0 : ㄱ + final_index + final_offset;
-}
-
-uint16_t from_jamo(uint16_t initial, uint16_t medial, uint16_t final) {
-    if (medial == 0) {
-        return initial;
-    }
-
-    int initial_offset = ㅅ <= initial   ? 11 // ㅅ ... ㅎ
-                         : ㅁ <= initial ? 10 // ㅁ ... ㅃ
-                         : ㄷ <= initial ? 3  // ㄷ ... ㄹ
-                         : ㄴ == initial ? 1  // ㄴ
-                                         : 0; // ㄱ
-
-    int final_offset = ㅊ <= final   ? 2   // ㅊ ... ㅎ
-                       : ㅄ <= final ? 1   // ㅄ ... ㅈ
-                       : ㄹ <= final ? 0   // ㄹ ... ㅂ
-                                     : -1; // ㄱ ... ㄷ
-
-    int initial_index = initial - ㄱ - initial_offset;
-    int medial_index  = medial - ㅏ;
-    int final_index   = (final == 0) ? 0 : final - ㄱ - final_offset;
-
-    return initial_index * 588 + medial_index * 28 + final_index + 가;
 }
 
 static uint16_t unicode_recent = 0;
@@ -197,7 +197,7 @@ bool process_record_dbs(uint16_t keycode, keyrecord_t *record) {
     // Backspace
     if (keycode == KC_BSPC) {
         if (unicode_recent == 0) {
-            // Fallthru if no recent korean is typed
+            // Fallthru if there is no recent korean input
             return false;
         }
 
@@ -253,13 +253,13 @@ bool process_record_dbs(uint16_t keycode, keyrecord_t *record) {
 
     bool is_jaum = ㄱ <= unicode && unicode <= ㅎ;
 
-    // No recent syllable typed
+    // No recent korean input
     if (unicode_recent == 0) {
         add_unicode(unicode);
         return true;
     }
 
-    // Recent syllable is a single jaum
+    // Recent korean input is a single jaum
     if (ㄱ <= unicode_recent && unicode_recent <= ㅎ) {
         if (is_jaum) {
             uint16_t combined = combine(unicode_recent, unicode);
@@ -284,7 +284,7 @@ bool process_record_dbs(uint16_t keycode, keyrecord_t *record) {
         return true;
     }
 
-    // Recent syllable is a single moum
+    // Recent korean input is a single moum
     if (ㅏ <= unicode_recent && unicode_recent <= ㅣ) {
         if (is_jaum) {
             // ㅏ + ㄱ = ㅏㄱ
@@ -304,7 +304,7 @@ bool process_record_dbs(uint16_t keycode, keyrecord_t *record) {
 
     if (final == 0) {
         if (is_jaum) {
-            if (final_able(unicode)) {
+            if (is_valid_final(unicode)) {
                 // 가 + ㄱ = 각
                 edit_unicode(from_jamo(initial, medial, unicode));
             } else {
