@@ -2,15 +2,15 @@
 
 An experimental QMK code piece that aims to simulate a [Dubeolsik](https://en.wikipedia.org/wiki/Keyboard_layout#Dubeolsik) layout within the QMK firmware.
 
-For Korean typists who prefer a customized English layout (e.g. Colemak), simply changing the layout in the QMK code is impossible as it also changes the Korean layout. There are a few ways to address this issue, each with its own set of limitations:
+For Korean typists who prefer a customized English layout (e.g. Colemak), simply remapping the QWERTY layout is not a viable option, as it would also scramble the Korean layout. There are a few ways to address this issue, each with its own set of limitations:
 
 - Instead add a custom English input method on their computers.
-  - Adding a custom layout is difficult.
+  - Adding a custom layout to a computer is difficult.
   - May have an impact on raw inputs, potentially affecting certain scenarios such as games.
-- Add a custom layer and QWERTY layer to the keyboard. Toggle the input method and layer at the same time.
+- Add an additional layer to the keyboard. Toggle the input method and layer at the same time.
   - The sync between the input method and the layout is not guaranteed. e.g. The input method may depend on each program window
 
-Handling the Korean input method inside the QMK code can solve above limitations.
+This custom QMK code piece can overcome above limitations by directly inputting Korean letters. For instance, it will send "ㅂ" instead of "KC_Q". It tries to combine letters interactively, just like how Windows Korean IME works.
 
 ## Prerequisites
 
@@ -24,4 +24,7 @@ Additionally for WinCompose users, the default compose key (Right Alt) will conf
 
 ## Configuration
 
-In `keymaps.c` file, edit `keymaps` and `dbs_keymap` to your own keyboard layout.
+In `keymaps.c` file, edit `keymaps[][MATRIX_ROWS][MATRIX_COLS]` and `dbs_keymap[MATRIX_ROWS][MATRIX_COLS]` to your own keyboard layout.
+
+Keyboards do not know when you switch between program windows, so a timer is implemented to reset the korean input.
+The timer duration is specified as `DBS_TIMEOUT_MS` in `config.h` file.
