@@ -13,6 +13,7 @@ enum custom_keycodes {
 // clang-format off
 
 // Example keymaps from kbdcraft/adam64
+// This layout is Colemak-DH
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_QWERTY] = LAYOUT_64_ansi(
         QK_GESC, KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC,
@@ -49,8 +50,8 @@ static uint16_t dbs_timer = 0;
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case TG_DBS:
-            reset_dbs_input();
             if (record->event.pressed) {
+                reset_dbs_input();
                 dbs_enable = !dbs_enable;
             }
             return false;
