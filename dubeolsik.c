@@ -2,13 +2,13 @@
 #include "dubeolsik.h"
 #include "keymap.h"
 
-uint16_t read_dbs_map(keyrecord_t *record) {
-    uint8_t  row     = record->event.key.row;
-    uint8_t  col     = record->event.key.col;
-    uint16_t unicode = dbs_map[row][col];
+uint16_t read_dbs_keymap(keyrecord_t *record) {
+    uint8_t row = record->event.key.row;
+    uint8_t col = record->event.key.col;
+    uint16_t unicode = dbs_keymap[row][col];
 
     // Shifted keys (e.g. KC_LSFT + ㅂ = ㅃ)
-    if (keyboard_report->mods & MOD_BIT(KC_LSFT) || keyboard_report->mods & MOD_BIT(KC_RSFT)) {
+    if (get_mods() & MOD_MASK_SHIFT) {
         switch (unicode) {
             case ㅂ:
             case ㅈ:
@@ -131,8 +131,8 @@ uint16_t from_jamo(uint16_t initial, uint16_t medial, uint16_t final) {
                                      : -1; // ㄱ ... ㄷ
 
     int initial_index = initial - ㄱ - initial_offset;
-    int medial_index  = medial - ㅏ;
-    int final_index   = (final == 0) ? 0 : final - ㄱ - final_offset;
+    int medial_index = medial - ㅏ;
+    int final_index = (final == 0) ? 0 : final - ㄱ - final_offset;
 
     return initial_index * 588 + medial_index * 28 + final_index + 가;
 }
@@ -146,7 +146,7 @@ void to_jamo(uint16_t unicode, uint16_t *initial, uint16_t *medial, uint16_t *fi
 
     int final_index = value % 28;
     value /= 28;
-    int medial_index  = value % 21;
+    int medial_index = value % 21;
     int initial_index = value / 21;
 
     int initial_offset = 9 <= initial_index   ? 11 // ㅅ ... ㅎ
@@ -161,18 +161,12 @@ void to_jamo(uint16_t unicode, uint16_t *initial, uint16_t *medial, uint16_t *fi
                                            : -1; // ㄱ ... ㄷ
 
     *initial = ㄱ + initial_index + initial_offset;
-    *medial  = ㅏ + medial_index;
-    *final   = (final_index == 0) ? 0 : ㄱ + final_index + final_offset;
+    *medial = ㅏ + medial_index;
+    *final = (final_index == 0) ? 0 : ㄱ + final_index + final_offset;
 }
 
 static uint16_t unicode_recent = 0;
 
-/**
- * Process Input
- */
-void reset_dbs_input(void) {
-    unicode_recent = 0;
-}
 
 void add_unicode(uint16_t unicode) {
     register_unicode(unicode);
@@ -185,10 +179,27 @@ void edit_unicode(uint16_t unicode) {
     unicode_recent = unicode;
 }
 
+/**
+ * Resets input.
+ */
+void reset_dbs_input(void) {
+    unicode_recent = 0;
+}
+
+/**
+ * Processes input. Acts like the process_record_*() functions.
+ * Returns true if the key press will not be handled here and requires processing outside the function, whether by QMK or process_record_*() functions.
+ */
 bool process_record_dbs(uint16_t keycode, keyrecord_t *record) {
-    // Fallthru shift (No reset)
+    // Skip handling shift (No Reset)
     if (keycode == KC_LSFT || keycode == KC_RSFT) {
-        return false;
+        return true;
+    }
+
+    // Skip modifier and one shot combinations except for Shift (Reset)
+    if (((get_mods() | get_oneshot_mods()) & ~MOD_MASK_SHIFT) != 0) {
+        reset_dbs_input();
+        return true;
     }
 
     uint16_t initial, medial, final;
@@ -197,8 +208,8 @@ bool process_record_dbs(uint16_t keycode, keyrecord_t *record) {
     // Backspace
     if (keycode == KC_BSPC) {
         if (unicode_recent == 0) {
-            // Fallthru if there is no recent korean input
-            return false;
+            // Skip handling usual backspace
+            return true;
         }
 
         if (unicode_recent < 가) {
@@ -233,22 +244,22 @@ bool process_record_dbs(uint16_t keycode, keyrecord_t *record) {
                 tap_code(KC_BSPC);
             }
         }
-        return true;
+        return false;
     }
 
-    uint16_t unicode = read_dbs_map(record);
+    uint16_t unicode = read_dbs_keymap(record);
 
-    // Fallthru unmapped unicodes
+    // Skip handling unmapped unicodes
     if (unicode == 0) {
         reset_dbs_input();
-        return false;
+        return true;
     }
 
     // Tap non-korean unicodes (e.g. KC_SCLN)
     if (unicode < ㄱ || ㅣ < unicode) {
         reset_dbs_input();
         tap_code(unicode);
-        return true;
+        return false;
     }
 
     bool is_jaum = ㄱ <= unicode && unicode <= ㅎ;
@@ -256,7 +267,7 @@ bool process_record_dbs(uint16_t keycode, keyrecord_t *record) {
     // No recent korean input
     if (unicode_recent == 0) {
         add_unicode(unicode);
-        return true;
+        return false;
     }
 
     // Recent korean input is a single jaum
@@ -281,7 +292,7 @@ bool process_record_dbs(uint16_t keycode, keyrecord_t *record) {
                 edit_unicode(from_jamo(unicode_recent, unicode, 0));
             }
         }
-        return true;
+        return false;
     }
 
     // Recent korean input is a single moum
@@ -299,7 +310,7 @@ bool process_record_dbs(uint16_t keycode, keyrecord_t *record) {
                 edit_unicode(combined);
             }
         }
-        return true;
+        return false;
     }
 
     if (final == 0) {
@@ -345,5 +356,5 @@ bool process_record_dbs(uint16_t keycode, keyrecord_t *record) {
         }
     }
 
-    return true;
+    return false;
 }

@@ -15,9 +15,13 @@ Handling the Korean input method inside the QMK code can solve above limitations
 ## Prerequisites
 
 This code piece utilizes the QMK Unicode feature. Some installations or modifications may be necessary since Unicode input methods are not enabled by default in most operating systems.
-Please read the [QMK Firmware documentation](https://docs.qmk.fm/#/feature_unicode?id=input-modes) and follow the instructions.
+Please read the [QMK Firmware documentation](https://docs.qmk.fm/#/feature_unicode?id=input-modes) and follow the OS-specific instruction.
 
 Additionally for WinCompose users, the default compose key (Right Alt) will conflict with the Korean IME. Perform one of the following:
 
-- Set the key to a different key and edit `UNICODE_KEY_WINC` value in `config.h` e.g. F13
-- Set the input method to English QWERTY only
+- Set the compose key to a different key, and edit `UNICODE_KEY_WINC` value (e.g. `KC_F13`) in `config.h` file
+- Remove the Korean IME
+
+## Configuration
+
+In `keymaps.c` file, edit `keymaps` and `dbs_keymap` to your own keyboard layout.
