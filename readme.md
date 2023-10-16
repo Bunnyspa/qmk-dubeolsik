@@ -10,17 +10,17 @@ For Korean typists who prefer a customized English layout (e.g. Colemak), simply
 - Add an additional layer to the keyboard. Toggle the input method and layer at the same time.
   - The sync between the input method and the layout is not guaranteed. e.g. The input method may depend on each program window
 
-This custom QMK code piece can overcome above limitations by directly inputting Korean letters. For instance, it will send "ㅂ" instead of "KC_Q". It tries to combine letters interactively, just like how Windows Korean IME works.
+This custom QMK code piece can overcome above limitations by directly inputting Korean letters. For instance, it will send literal "ㅂ" instead of "KC_Q". It tries to combine letters interactively, just like how Windows Korean IME works.
 
 ## Prerequisites
 
 This code piece utilizes the QMK Unicode feature. Some installations or modifications may be necessary since Unicode input methods are not enabled by default in most operating systems.
-Please read the [QMK Firmware documentation](https://docs.qmk.fm/#/feature_unicode?id=input-modes) and follow the OS-specific instruction.
+Please read the [QMK Firmware documentation](https://docs.qmk.fm/#/feature_unicode?id=input-modes) and follow the OS-specific instructions.
 
-Additionally for WinCompose users, the default compose key (Right Alt) will conflict with the Korean IME. Perform one of the following:
+Additionally for WinCompose users, the default compose key (Right Alt) will also activate "한/영" key in the Korean IME. You can choose to do one of the following to prevent it:
 
-- Set the compose key to a different key, and edit `UNICODE_KEY_WINC` value (e.g. `KC_F13`) in `config.h` file
-- Remove the Korean IME
+- Set the compose key to a different key (e.g. `F13`), and edit `UNICODE_KEY_WINC` value (e.g. `KC_F13`) in `config.h` file
+- Disable the Korean IME and use the English QWERTY layout.
 
 ## Configuration
 
