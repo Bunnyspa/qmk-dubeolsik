@@ -6,7 +6,6 @@ For Korean typists who prefer a customized English layout (e.g. Colemak-DH), sim
 
 - Instead add a custom English layout on their computers.
   - Adding a custom layout to a computer is difficult.
-  - May have an impact on raw inputs, potentially affecting certain scenarios such as games.
 - Add an additional layer to the keyboard. Toggle the language input and layer at the same time.
   - The sync between the language input and the layer is not guaranteed.
 
