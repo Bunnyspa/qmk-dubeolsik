@@ -2,10 +2,10 @@
 #include "dubeolsik.h"
 #include "keymap.h"
 
-uint16_t read_dbs_map(keyrecord_t *record) {
+uint16_t read_dbs_keymap(keyrecord_t *record) {
     uint8_t row = record->event.key.row;
     uint8_t col = record->event.key.col;
-    uint16_t unicode = dbs_map[row][col];
+    uint16_t unicode = dbs_keymap[row][col];
 
     // Shifted keys (e.g. KC_LSFT + KR_B = KC_BB)
     if (keyboard_report->mods & MOD_BIT(KC_LSFT) || keyboard_report->mods & MOD_BIT(KC_RSFT)) {
@@ -236,7 +236,7 @@ bool process_record_dbs(uint16_t keycode, keyrecord_t *record) {
         return true;
     }
 
-    uint16_t unicode = read_dbs_map(record);
+    uint16_t unicode = read_dbs_keymap(record);
 
     // Fallthru unmapped unicodes
     if (unicode == 0) {
