@@ -37,7 +37,7 @@ const uint16_t PROGMEM dbs_keymap[MATRIX_ROWS][MATRIX_COLS] =
           LAYOUT_64_ansi(
         XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
         XXXXXXX, KR_B,    KR_J,    KR_D,    KR_G,    KR_S,    KR_YO,   KR_YEO,  KR_YA,   KR_AE,   KR_E,    XXXXXXX, XXXXXXX, XXXXXXX,
-        XXXXXXX, KR_M,    KR_N,    KR_X,    KR_L,    KR_H,    KR_O,    KR_EO,   KR_A,    KR_I,    KC_SCLN, XXXXXXX, XXXXXXX,
+        XXXXXXX, KR_M,    KR_N,    KR_X,    KR_L,    KR_H,    KR_O,    KR_EO,   KR_A,    KR_I,    KC_SCLN, XXXXXXX,          XXXXXXX,
         XXXXXXX, KR_K,    KR_T,    KR_CH,   KR_P,    KR_YU ,  KR_U,    KR_EU,   XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
         XXXXXXX, XXXXXXX, XXXXXXX,                   XXXXXXX,                            XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX
 );
