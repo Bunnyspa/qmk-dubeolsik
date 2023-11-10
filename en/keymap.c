@@ -33,7 +33,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 // This keymap determines which korean input to send
-static const uint16_t PROGMEM dbs_keymap[MATRIX_ROWS][MATRIX_COLS] = 
+const uint16_t PROGMEM dbs_keymap[MATRIX_ROWS][MATRIX_COLS] = 
           LAYOUT_64_ansi(
         XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
         XXXXXXX, KR_B,    KR_J,    KR_D,    KR_G,    KR_S,    KR_YO,   KR_YEO,  KR_YA,   KR_AE,   KR_E,    XXXXXXX, XXXXXXX, XXXXXXX,
