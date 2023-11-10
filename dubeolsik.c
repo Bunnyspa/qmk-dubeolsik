@@ -167,7 +167,6 @@ void to_jamo(uint16_t unicode, uint16_t *initial, uint16_t *medial, uint16_t *fi
 
 static uint16_t unicode_recent = 0;
 
-
 void add_unicode(uint16_t unicode) {
     register_unicode(unicode);
     unicode_recent = unicode;

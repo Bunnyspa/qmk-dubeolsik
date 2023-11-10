@@ -185,6 +185,10 @@ void reset_dbs_input(void) {
     unicode_recent = 0;
 }
 
+/**
+ * Processes input. Acts like the process_record_*() functions.
+ * Returns true if the key press will not be handled here and requires processing outside the function, whether by QMK or process_record_*() functions.
+ */
 bool process_record_dbs(uint16_t keycode, keyrecord_t *record) {
     // Skip handling shift (No Reset)
     if (keycode == KC_LSFT || keycode == KC_RSFT) {
