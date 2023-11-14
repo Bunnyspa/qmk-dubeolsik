@@ -58,7 +58,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         default:
             if (record->event.pressed) {
                 if (dbs_enable && get_highest_layer(layer_state) == _QWERTY) {
-                    if (!process_record_dbs(keycode, record)) {
+                    // If you have custom shift keycodes, such as space cadet shifts,
+                    // Replace KC_LSFT and KC_RSFT to the custom shift keycodes.
+                    if (!process_record_dbs(keycode, record, KC_LSFT, KC_RSFT)) {
                         dbs_timer = (record->event.time + DBS_TIMEOUT_MS) | 1;
                         return false;
                     }

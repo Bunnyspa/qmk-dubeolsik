@@ -1,4 +1,4 @@
-bool process_record_dbs(uint16_t keycode, keyrecord_t *record);
+bool process_record_dbs(uint16_t keycode, keyrecord_t *record, uint16_t ls_keycode, uint16_t rs_keycode);
 void reset_dbs_input(void);
 
 // Korean consonant unicodes (ㄱ ... ㅎ)
