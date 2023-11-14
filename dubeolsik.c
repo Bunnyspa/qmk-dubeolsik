@@ -10,14 +10,14 @@ uint16_t read_dbs_keymap(keyrecord_t *record) {
     // Shifted keys (e.g. KC_LSFT + ㅂ = ㅃ)
     if (get_mods() & MOD_MASK_SHIFT) {
         switch (unicode) {
-            case ㅂ:
-            case ㅈ:
-            case ㄷ:
-            case ㄱ:
-            case ㅅ:
+            case KR_B: // ㅂ
+            case KR_J: // ㅈ
+            case KR_D: // ㄷ
+            case KR_G: // ㄱ
+            case KR_S: // ㅅ
                 return unicode + 1;
-            case ㅐ:
-            case ㅔ:
+            case KR_AE: // ㅐ
+            case KR_E:  // ㅔ
                 return unicode + 2;
         }
     }
@@ -28,50 +28,50 @@ uint16_t read_dbs_keymap(keyrecord_t *record) {
 // clang-format off
 uint16_t combine(uint16_t first, uint16_t second) {
     switch (first) {
-        case ㄱ:
+        case KR_G: // ㄱ
             switch (second) {
-                case ㅅ: return ㄳ;
+                case KR_S: return KR_GS; // ㄳ
             }
             break;
-        case ㄴ:
+        case KR_N: // ㄴ
             switch (second) {
-                case ㅈ: return ㄵ;
-                case ㅎ: return ㄶ;
+                case KR_J: return KR_NJ; // ㄵ
+                case KR_H: return KR_NH; // ㄶ
             }
             break;
-        case ㄹ:
+        case KR_L: // ㄹ
             switch (second) {
-                case ㄱ: return ㄺ;
-                case ㅁ: return ㄻ;
-                case ㅂ: return ㄼ;
-                case ㅅ: return ㄽ;
-                case ㅌ: return ㄾ;
-                case ㅍ: return ㄿ;
-                case ㅎ: return ㅀ;
+                case KR_G: return KR_LG; // ㄺ
+                case KR_M: return KR_LM; // ㄻ
+                case KR_B: return KR_LB; // ㄼ
+                case KR_S: return KR_LS; // ㄽ
+                case KR_T: return KR_LT; // ㄾ
+                case KR_P: return KR_LP; // ㄿ
+                case KR_H: return KR_LH; // ㅀ
             }
             break;
-        case ㅂ:
+        case KR_B: // ㅂ
             switch (second) {
-                case ㅅ: return ㅄ;
+                case KR_S: return KC_BS; // ㅄ
             }
             break;
-        case ㅗ:
+        case KR_O: // ㅗ
             switch (second) {
-                case ㅏ: return ㅘ;
-                case ㅐ: return ㅙ;
-                case ㅣ: return ㅚ;
+                case KR_A: return KR_WA; // ㅘ
+                case KR_AE: return KR_WAE; // ㅙ
+                case KR_I: return KR_OE; // ㅚ
             }
             break;
-        case ㅜ:
+        case KR_U: // ㅜ
             switch (second) {
-                case ㅓ: return ㅝ;
-                case ㅔ: return ㅞ;
-                case ㅣ: return ㅟ;
+                case KR_EO: return KR_WO; // ㅝ
+                case KR_E: return KR_WE; // ㅞ
+                case KR_I: return KR_WI; // ㅟ
             }
             break;
-        case ㅡ:
+        case KR_EU: // ㅡ
             switch (second) {
-                case ㅣ: return ㅢ;
+                case KR_I: return KR_UI; // ㅢ
             }
             break;
     }
@@ -80,24 +80,24 @@ uint16_t combine(uint16_t first, uint16_t second) {
 
 bool divide(uint16_t compound, uint16_t *first, uint16_t *second) {
     switch (compound) {
-        case ㄳ: *first  = ㄱ; *second = ㅅ; return true;
-        case ㄵ: *first  = ㄴ; *second = ㅈ; return true;
-        case ㄶ: *first  = ㄴ; *second = ㅎ; return true;
-        case ㄺ: *first  = ㄹ; *second = ㄱ; return true;
-        case ㄻ: *first  = ㄹ; *second = ㅁ; return true;
-        case ㄼ: *first  = ㄹ; *second = ㅂ; return true;
-        case ㄽ: *first  = ㄹ; *second = ㅅ; return true;
-        case ㄾ: *first  = ㄹ; *second = ㅌ; return true;
-        case ㄿ: *first  = ㄹ; *second = ㅍ; return true;
-        case ㅀ: *first  = ㄹ; *second = ㅎ; return true;
-        case ㅄ: *first  = ㅂ; *second = ㅅ; return true;
-        case ㅘ: *first  = ㅗ; *second = ㅏ; return true;
-        case ㅙ: *first  = ㅗ; *second = ㅐ; return true;
-        case ㅚ: *first  = ㅗ; *second = ㅣ; return true;
-        case ㅝ: *first  = ㅜ; *second = ㅓ; return true;
-        case ㅞ: *first  = ㅜ; *second = ㅔ; return true;
-        case ㅟ: *first  = ㅜ; *second = ㅣ; return true;
-        case ㅢ: *first  = ㅡ; *second = ㅣ; return true;
+        case KR_GS:  *first  = KR_G;  *second = KR_S;  return true; // ㄳ
+        case KR_NJ:  *first  = KR_N;  *second = KR_J;  return true; // ㄵ
+        case KR_NH:  *first  = KR_N;  *second = KR_H;  return true; // ㄶ
+        case KR_LG:  *first  = KR_L;  *second = KR_G;  return true; // ㄺ
+        case KR_LM:  *first  = KR_L;  *second = KR_M;  return true; // ㄻ
+        case KR_LB:  *first  = KR_L;  *second = KR_B;  return true; // ㄼ
+        case KR_LS:  *first  = KR_L;  *second = KR_S;  return true; // ㄽ
+        case KR_LT:  *first  = KR_L;  *second = KR_T;  return true; // ㄾ
+        case KR_LP:  *first  = KR_L;  *second = KR_P;  return true; // ㄿ
+        case KR_LH:  *first  = KR_L;  *second = KR_H;  return true; // ㅀ
+        case KC_BS:  *first  = KR_B;  *second = KR_S;  return true; // ㅄ
+        case KR_WA:  *first  = KR_O;  *second = KR_A;  return true; // ㅘ
+        case KR_WAE: *first  = KR_O;  *second = KR_AE; return true; // ㅙ
+        case KR_OE:  *first  = KR_O;  *second = KR_I;  return true; // ㅚ
+        case KR_WO:  *first  = KR_U;  *second = KR_EO; return true; // ㅝ
+        case KR_WE:  *first  = KR_U;  *second = KR_E;  return true; // ㅞ
+        case KR_WI:  *first  = KR_U;  *second = KR_I;  return true; // ㅟ
+        case KR_UI:  *first  = KR_EU; *second = KR_I;  return true; // ㅢ
         default: return false;
     }
 }
@@ -105,9 +105,9 @@ bool divide(uint16_t compound, uint16_t *first, uint16_t *second) {
 
 bool is_valid_final(uint16_t consonant) {
     switch (consonant) {
-        case ㄸ:
-        case ㅃ:
-        case ㅉ:
+        case KR_DD: // ㄸ
+        case KC_BB: // ㅃ
+        case KR_JJ: // ㅉ
             return false;
         default:
             return true;
@@ -119,30 +119,30 @@ uint16_t from_jamo(uint16_t initial, uint16_t medial, uint16_t final) {
         return initial;
     }
 
-    int initial_offset = ㅅ <= initial   ? 11 // ㅅ ... ㅎ
-                         : ㅁ <= initial ? 10 // ㅁ ... ㅃ
-                         : ㄷ <= initial ? 3  // ㄷ ... ㄹ
-                         : ㄴ == initial ? 1  // ㄴ
-                                         : 0; // ㄱ
+    int initial_offset = KR_S <= initial   ? 11 // ㅅ ... ㅎ
+                         : KR_M <= initial ? 10 // ㅁ ... ㅃ
+                         : KR_D <= initial ? 3  // ㄷ ... ㄹ
+                         : KR_N == initial ? 1  // ㄴ
+                                           : 0; // ㄱ
 
-    int final_offset = ㅊ <= final   ? 2   // ㅊ ... ㅎ
-                       : ㅄ <= final ? 1   // ㅄ ... ㅈ
-                       : ㄹ <= final ? 0   // ㄹ ... ㅂ
-                                     : -1; // ㄱ ... ㄷ
+    int final_offset = KR_CH <= final   ? 2  // ㅊ ... ㅎ
+                       : KC_BS <= final ? 1  // ㅄ ... ㅈ
+                       : KR_L <= final  ? 0  // ㄹ ... ㅂ
+                                        : -1; // ㄱ ... ㄷ
 
-    int initial_index = initial - ㄱ - initial_offset;
-    int medial_index = medial - ㅏ;
-    int final_index = (final == 0) ? 0 : final - ㄱ - final_offset;
+    int initial_index = initial - KR_G - initial_offset;
+    int medial_index = medial - KR_A;
+    int final_index = (final == 0) ? 0 : final - KR_G - final_offset;
 
-    return initial_index * 588 + medial_index * 28 + final_index + 가;
+    return initial_index * 588 + medial_index * 28 + final_index + KR_SYLLABLE_OFFSET;
 }
 
 void to_jamo(uint16_t unicode, uint16_t *initial, uint16_t *medial, uint16_t *final) {
-    if (unicode < 가) {
+    if (unicode < KR_SYLLABLE_OFFSET) {
         return;
     }
 
-    uint16_t value = unicode - 가;
+    uint16_t value = unicode - KR_SYLLABLE_OFFSET;
 
     int final_index = value % 28;
     value /= 28;
@@ -160,9 +160,9 @@ void to_jamo(uint16_t unicode, uint16_t *initial, uint16_t *medial, uint16_t *fi
                        : 8 <= final_index  ? 0  // ㄹ ... ㅂ
                                            : -1; // ㄱ ... ㄷ
 
-    *initial = ㄱ + initial_index + initial_offset;
-    *medial = ㅏ + medial_index;
-    *final = (final_index == 0) ? 0 : ㄱ + final_index + final_offset;
+    *initial = KR_G + initial_index + initial_offset;
+    *medial = KR_A + medial_index;
+    *final = (final_index == 0) ? 0 : KR_G + final_index + final_offset;
 }
 
 static uint16_t unicode_recent = 0;
@@ -211,7 +211,7 @@ bool process_record_dbs(uint16_t keycode, keyrecord_t *record) {
             return true;
         }
 
-        if (unicode_recent < 가) {
+        if (unicode_recent < KR_SYLLABLE_OFFSET) {
             if (final != 0) {
                 uint16_t f1, f2;
                 if (divide(final, &f1, &f2)) {
@@ -255,13 +255,13 @@ bool process_record_dbs(uint16_t keycode, keyrecord_t *record) {
     }
 
     // Tap non-korean unicodes (e.g. KC_SCLN)
-    if (unicode < ㄱ || ㅣ < unicode) {
+    if (unicode < KR_G || KR_I < unicode) {
         reset_dbs_input();
         tap_code(unicode);
         return false;
     }
 
-    bool is_jaum = ㄱ <= unicode && unicode <= ㅎ;
+    bool is_jaum = KR_G <= unicode && unicode <= KR_H;
 
     // No recent korean input
     if (unicode_recent == 0) {
@@ -270,7 +270,7 @@ bool process_record_dbs(uint16_t keycode, keyrecord_t *record) {
     }
 
     // Recent korean input is a single jaum
-    if (ㄱ <= unicode_recent && unicode_recent <= ㅎ) {
+    if (KR_G <= unicode_recent && unicode_recent <= KR_H) {
         if (is_jaum) {
             uint16_t combined = combine(unicode_recent, unicode);
             if (combined == 0) {
@@ -295,7 +295,7 @@ bool process_record_dbs(uint16_t keycode, keyrecord_t *record) {
     }
 
     // Recent korean input is a single moum
-    if (ㅏ <= unicode_recent && unicode_recent <= ㅣ) {
+    if (KR_A <= unicode_recent && unicode_recent <= KR_I) {
         if (is_jaum) {
             // ㅏ + ㄱ = ㅏㄱ
             add_unicode(unicode);
